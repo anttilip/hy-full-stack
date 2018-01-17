@@ -3,9 +3,10 @@ import './App.css';
 import Feedback from './Feedback'
 import Statistics from './Statistics'
 
-const Stat = (name) => ({
+const Stat = (name, value=0) => ({
   name: name,
   votes: 0,
+  value: value
 })
 
 class App extends Component {
@@ -14,9 +15,9 @@ class App extends Component {
 
     this.state = {
       stats: [
-       Stat('hyvä'),
+       Stat('hyvä', 1),
        Stat('neutraali'),
-       Stat('huono'),
+       Stat('huono', -1),
       ]
     }
   }
