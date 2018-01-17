@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Feedback from './Feedback'
 import Statistics from './Statistics'
+import AnecdoteContainer from './AnecdoteContainer'
 
 const Stat = (name, value=0) => ({
   name: name,
@@ -39,6 +40,7 @@ class App extends Component {
         <h1>Unicafe Feedback App!</h1>
         <Feedback stats={this.state.stats} onFeedback={stat => this.addVote(stat)} />
         <Statistics stats={this.state.stats} />
+        <AnecdoteContainer />
       </div>
     );
   }
