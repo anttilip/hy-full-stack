@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs HTTP/1.1
+content-type: application/json
+
+{
+    "title": "How to use mongo db",
+    "author": "jake",
+    "url": "www.medium.com/totallyrealurl/14214",
+    "likes": 22345
+}
