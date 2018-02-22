@@ -14,12 +14,23 @@ mongoose.Promise = global.Promise
 
 app.use(cors())
 app.use(bodyParser.json())
-app.use(middleware.logger)
+app.use(bodyParser.urlencoded({ extended: false }))
+// app.use(middleware.logger)
 app.use('/api/blogs', blogsRouter)
-app.use(middleware.error)
+// app.use(middleware.error)
 
+const server = http.createServer(app)
 
-const PORT = 3003
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 3003
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+server.on('close', () => {
+  mongoose.connection.close()
+})
+
+module.exports = {
+  app,
+  server
+}
