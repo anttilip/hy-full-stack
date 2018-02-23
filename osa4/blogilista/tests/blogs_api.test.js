@@ -1,7 +1,23 @@
 const supertest = require('supertest')
 const { app, server } = require('../index')
 const Blog = require('../models/blog')
+const {
+  initialBlogs,
+  format,
+  nonExistingId,
+  blogsInDb
+} = require('./test_helper')
 const api = supertest(app)
+
+beforeAll(async () => {
+  await Blog.remove({})
+  const blogObjects = initialBlogs.map(blog => new Blog(blog))
+  await Promise.all(blogObjects.map(b => b.save()))
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('GET /api/blogs', () => {
   test('blogs are returned as json', async () => {
@@ -27,7 +43,7 @@ describe('POST /api/blogs', () => {
       .post('/api/blogs')
       .send(body)
 
-    const blogs = await Blog.find({})
+    const blogs = await blogsInDb()
     const matching = blogs.find(blog => blog.title === body.title)
 
     expect(matching).not.toBeNull()
@@ -51,32 +67,54 @@ describe('POST /api/blogs', () => {
   })
 })
 
-const initialBlogs = [
-    {
-      _id: "5a422a851b54a676234d17f7",
-      title: "React patterns",
-      author: "Michael Chan",
-      url: "https://reactpatterns.com/",
-      likes: 7,
-      __v: 0
-    },
-    {
-      _id: "5a422aa71b54a676234d17f8",
-      title: "Go To Statement Considered Harmful",
-      author: "Edsger W. Dijkstra",
-      url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-      likes: 5,
-      __v: 0
-    }
-]
+describe('DELETE /api/blogs/:id', () => {
+  test('returns 200', async () => {
+    const blogsBefore = await blogsInDb()
+    const blogToDelete = blogsBefore[0]
 
-beforeAll(async () => {
-  await Blog.remove({})
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(200)
+    
+    const blogsAfter = await blogsInDb()
+    expect(blogsAfter.length).toBe(blogsBefore.length - 1)
+    const blogIds = blogsAfter.map(blog => blog.id)
+    expect(blogIds).not.toContain(blogToDelete.id)
+  })
 
-  initialBlogs.forEach(async blog => await new Blog(blog).save())
+  test('returns 404 if id doesnt exist', async () => {
+    const invalidId = await nonExistingId()
+    const blogsBefore = await blogsInDb()
 
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .expect(404)
+    
+    const blogsAfter = await blogsInDb()
+    expect(blogsAfter.length).toBe(blogsBefore.length)
+  })
 })
 
-afterAll(() => {
-  server.close()
+describe('PUT /api/blogs/:id', () => {
+  test('returns 200', async () => {
+    const blogsBefore = await blogsInDb()
+    const blogToEdit = blogsBefore[0]
+    blogToEdit.title = 'edited-title'
+
+    await api
+      .put(`/api/blogs/${blogToEdit.id}`)
+      .send(blogToEdit)
+      .expect(200)
+    
+    const editedBlog = await Blog.findById(blogToEdit.id)
+    expect(editedBlog.title).toBe(blogToEdit.title)
+  })
+
+  test('returns 404 if id doesnt exist', async () => {
+    const invalidId = await nonExistingId()
+
+    await api
+      .put(`/api/blogs/${invalidId}`)
+      .expect(404)
+  })
 })
