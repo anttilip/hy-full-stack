@@ -1,12 +1,13 @@
 /* eslint-disable */
 import React from 'react'
+import { connect } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
 import Filter from './Filter'
 /* eslint-enable */
 
 class AnecdoteList extends React.Component {
   render() {
-    const anecdotes = this.props.store.getState().anecdotes.visible
+    const anecdotes = this.props.anecdotes
     return (
       <div>
         <h2>Anecdotes</h2>
@@ -19,7 +20,7 @@ class AnecdoteList extends React.Component {
             <div>
               has {anecdote.votes}
               <button onClick={() => 
-                this.props.store.dispatch(voteAnecdote(anecdote))
+                this.props.voteAnecdote(anecdote)
               }>
                 vote
               </button>
@@ -31,4 +32,15 @@ class AnecdoteList extends React.Component {
   }
 }
 
-export default AnecdoteList
+const mapStateToProps = state => ({
+  anecdotes: state.anecdotes.visible
+})
+
+const mapDispatchToProps = {
+  voteAnecdote
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AnecdoteList)
