@@ -1,3 +1,5 @@
+// import store from '../store'
+// import { createNotification } from './notificationReducer'
 import { getId, asObject } from './utils'
 
 const initialAnecdotes = [
@@ -7,17 +9,29 @@ const initialAnecdotes = [
   'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
-].map(asObject)
+]
 
-const anecdoteReducer = (state = initialAnecdotes, action) => {
-  if (action.type==='VOTE') {
-    const old = state.filter(a => a.id !== action.id)
-    const voted = state.find(a => a.id === action.id)
+const initialState = {
+  list: initialAnecdotes.map(asObject),
+  lastVotedId: null
+}
 
-    return [...old, { ...voted, votes: voted.votes+1} ]
+const anecdoteReducer = (state = initialState, action) => {
+  if (action.type==='VOTE_ANECDOTE') {
+    const old = state.list.filter(a => a.id !== action.anecdote.id)
+    const voted = state.list.find(a => a.id === action.anecdote.id)
+
+    return {
+      ...state,
+      lastVoted: voted,
+      list: [...old, { ...voted, votes: voted.votes+1} ]
+    }
   }
-  if (action.type === 'CREATE') {
-    return [...state, { content: action.content, id: getId(), votes:0 }]
+  if (action.type === 'CREATE_ANECDOTE') {
+    return {
+      ...state,
+      list: [...state.list, { content: action.content, id: getId(), votes:0 }]
+    } 
   }
 
   return state
@@ -26,15 +40,19 @@ const anecdoteReducer = (state = initialAnecdotes, action) => {
 export default anecdoteReducer
 
 
-const createAnecdote = content => ({
-  type: 'CREATE',
-  content
-})
+const createAnecdote = content => {
+  return {
+    type: 'CREATE_ANECDOTE',
+    content
+  }
+}
 
-const voteAnecdote = anecdote => ({
-  type: 'VOTE',
-  id: anecdote.id 
-})
+const voteAnecdote = anecdote => {
+  return {
+    type: 'VOTE_ANECDOTE',
+    anecdote
+  } 
+}
 
 export {
   createAnecdote,

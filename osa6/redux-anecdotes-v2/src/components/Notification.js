@@ -10,8 +10,12 @@ class Notification extends React.Component {
 
     const notification = this.props.store.getState().notification
     return (
-      <div style={style}>
-        {notification}
+      <div>
+        { notification &&
+          <div style={style}>
+            {notification}
+          </div>
+        }
       </div>
     )
   }

@@ -1,7 +1,17 @@
+import store from '../store'
+
 const notificationReducer = (state = 'Initial notification', action) => {
   switch(action.type) {
   case 'CREATE_NOTIFICATION':
     return action.notification
+  case 'CLEAR_NOTIFICATION':
+    return null
+  case 'VOTE_ANECDOTE':
+    clearNotificationTimeout()
+    return `You voted '${action.anecdote.content}'`
+  case 'CREATE_ANECDOTE':
+    clearNotificationTimeout()
+    return `You created '${action.content}'`
   default:
     return state
   }
@@ -9,11 +19,12 @@ const notificationReducer = (state = 'Initial notification', action) => {
 
 export default notificationReducer
 
-const createNotification = (content) => ({
-  type: 'CREATE_NOTIFICATION',
-  notification: content
-})
+const clearNotificationTimeout = (timeout = 5) => {
+  setTimeout(() => {
+    store.dispatch(clearNotification())
+  }, timeout * 1000)
+} 
 
-export {
-  createNotification,
-}
+const clearNotification = () => ({
+  type: 'CLEAR_NOTIFICATION'
+})

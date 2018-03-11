@@ -1,8 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+/* eslint-disable */
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
 import store from './store'
-
+/*eslint-enable */
 
 const render = () => {
   ReactDOM.render(

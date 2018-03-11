@@ -1,7 +1,9 @@
+/* eslint-disable */
 import React from 'react'
 import Notification from './components/Notification'
 import AnecdoteForm from './components/AnecdoteForm'
 import AnecdoteList from './components/AnecdoteList'
+/* eslint-enable */
 
 class App extends React.Component {
 
