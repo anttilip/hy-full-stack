@@ -22,18 +22,20 @@ const anecdoteReducer = (state = initialState, action) => {
     const old = state.list.filter(a => a.id !== action.anecdote.id)
     const voted = state.list.find(a => a.id === action.anecdote.id)
     const updatedAnecdotes = [...old, { ...voted, votes: voted.votes+1} ]
-    const visibleIds = state.visible.map(a => a.id)
     return {
       ...state,
       list: updatedAnecdotes,
-      visible: updatedAnecdotes.filter(a => visibleIds.includes(a.id))
+      visible: updatedAnecdotes
     }
   }
-  case 'CREATE_ANECDOTE':
+  case 'CREATE_ANECDOTE': {
+    const updatedAnecdotes = [...state.list, { content: action.content, id: getId(), votes: 0 }]
     return {
       ...state,
-      list: [...state.list, { content: action.content, id: getId(), votes:0 }]
+      list: updatedAnecdotes,
+      visible: updatedAnecdotes
     }
+  }
   case 'MODIFY_FILTER': {
     const visible = state.list.filter(a => a.content.includes(action.value))
     return {...state, visible}

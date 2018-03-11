@@ -15,7 +15,10 @@ class Filter extends React.Component {
 
     return (
       <div style={style}>
-        filter <input onChange={(e) => this.handleChange(e)}/>
+        filter <input
+          value={this.props.store.getState().filter}
+          onChange={(e) => this.handleChange(e)}
+        />
       </div>
     )
   }
