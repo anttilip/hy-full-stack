@@ -1,12 +1,16 @@
+/* eslint-disable */
 import React from 'react'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
+import Filter from './Filter'
+/* eslint-enable */
 
 class AnecdoteList extends React.Component {
   render() {
-    const anecdotes = this.props.store.getState().anecdotes.list
+    const anecdotes = this.props.store.getState().anecdotes.visible
     return (
       <div>
         <h2>Anecdotes</h2>
+        <Filter store={this.props.store} />
         {anecdotes.sort((a, b) => b.votes - a.votes).map(anecdote =>
           <div key={anecdote.id}>
             <div>

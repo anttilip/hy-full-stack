@@ -13,46 +13,48 @@ const initialAnecdotes = [
 
 const initialState = {
   list: initialAnecdotes.map(asObject),
-  lastVotedId: null
+  visible: initialAnecdotes.map(asObject)
 }
 
 const anecdoteReducer = (state = initialState, action) => {
-  if (action.type==='VOTE_ANECDOTE') {
+  switch(action.type) {
+  case 'VOTE_ANECDOTE': {
     const old = state.list.filter(a => a.id !== action.anecdote.id)
     const voted = state.list.find(a => a.id === action.anecdote.id)
-
+    const updatedAnecdotes = [...old, { ...voted, votes: voted.votes+1} ]
+    const visibleIds = state.visible.map(a => a.id)
     return {
       ...state,
-      lastVoted: voted,
-      list: [...old, { ...voted, votes: voted.votes+1} ]
+      list: updatedAnecdotes,
+      visible: updatedAnecdotes.filter(a => visibleIds.includes(a.id))
     }
   }
-  if (action.type === 'CREATE_ANECDOTE') {
+  case 'CREATE_ANECDOTE':
     return {
       ...state,
       list: [...state.list, { content: action.content, id: getId(), votes:0 }]
-    } 
+    }
+  case 'MODIFY_FILTER': {
+    const visible = state.list.filter(a => a.content.includes(action.value))
+    return {...state, visible}
   }
-
-  return state
+  default:
+    return state
+  }
 }
 
 export default anecdoteReducer
 
 
-const createAnecdote = content => {
-  return {
-    type: 'CREATE_ANECDOTE',
-    content
-  }
-}
+const createAnecdote = content => ({
+  type: 'CREATE_ANECDOTE',
+  content
+})
 
-const voteAnecdote = anecdote => {
-  return {
-    type: 'VOTE_ANECDOTE',
-    anecdote
-  } 
-}
+const voteAnecdote = anecdote => ({
+  type: 'VOTE_ANECDOTE',
+  anecdote
+})
 
 export {
   createAnecdote,
